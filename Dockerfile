@@ -33,7 +33,7 @@ RUN npm run build:prod
 # ── Runtime stage ────────────────────────────────────────────────────────────
 # Image non-root : l'image nginx standard ne peut pas écrire /run/nginx.pid
 # sous runAsUser 101 (Deployment). Celle-ci écoute déjà sur 8080.
-FROM nginxinc/nginx-unprivileged:1.27-alpine
+FROM nginxinc/nginx-unprivileged:1.29-alpine
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=build /app/dist/azure-quiz-frontend/browser /usr/share/nginx/html
 
