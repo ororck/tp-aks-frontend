@@ -14,7 +14,7 @@
 # ──────────────────────────────────────────────────────────────────────────────
 
 # ── Build stage ─────────────────────────────────────────────────────────────
-FROM node:24-alpine AS build
+FROM node:26-alpine AS build
 WORKDIR /app
 
 COPY package.json package-lock.json ./
