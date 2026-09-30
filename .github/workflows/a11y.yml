@@ -1,0 +1,50 @@
+name: a11y
+
+# Accessibilité : axe-core (Deque) audite le DOM rendu de l'application
+# construite, règles WCAG 2.0 A et AA. INFORMATIF (exit 0) : un audit
+# automatique ne couvre qu'une partie des critères WCAG, il ne suffit pas
+# comme barrière. Le rapport JSON est en artifact, le résumé dans le Job Summary.
+# Doc : https://github.com/dequelabs/axe-core-npm
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  axe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Construire l'application
+        run: npm run build:prod
+      - name: Audit axe-core
+        run: |
+          npx --yes http-server dist/azure-quiz-frontend/browser -p 8080 -s &
+          npx --yes wait-on http://localhost:8080
+          npx --yes @axe-core/cli http://localhost:8080 --tags wcag2a,wcag2aa --save axe.json | tee axe.txt || true
+
+      - name: Résumé dans le Job Summary
+        if: always()
+        run: |
+          {
+            echo '### axe-core'
+            echo '```'
+            cat axe.txt 2>/dev/null || echo 'aucun rapport produit'
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: axe-report
+          path: axe.json
+          if-no-files-found: ignore
