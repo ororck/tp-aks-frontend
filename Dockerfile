@@ -31,8 +31,10 @@ RUN sed -i "s#https://REPLACE_WITH_PROD_API_URL/api#${API_BASE_URL}#" src/enviro
 RUN npm run build:prod
 
 # ── Runtime stage ────────────────────────────────────────────────────────────
-FROM nginx:1.27-alpine
+# Image non-root : l'image nginx standard ne peut pas écrire /run/nginx.pid
+# sous runAsUser 101 (Deployment). Celle-ci écoute déjà sur 8080.
+FROM nginxinc/nginx-unprivileged:1.27-alpine
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=build /app/dist/azure-quiz-frontend/browser /usr/share/nginx/html
 
-EXPOSE 80
+EXPOSE 8080
