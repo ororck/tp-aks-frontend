@@ -20,8 +20,6 @@ env:
   AKS_NAME: aks-nonprod-prf2026
   AKS_RG: rg-shared-prf2026
   NAMESPACE: mohamed-saidi
-  # Hôte public de l'ingress partagé (IP d'entrée fournie par le formateur).
-  INGRESS_HOST: mohamed-saidi.20.74.93.53.nip.io
 
 jobs:
   deploy:
@@ -49,6 +47,19 @@ jobs:
           # la clé est factice : aucune clé d'API applicative entre front et back.
           docker build --build-arg API_BASE_URL=/api --build-arg API_KEY=unused -t "$IMAGE" .
           docker push "$IMAGE"
+
+      # L'IP d'entrée du cluster partagé a déjà changé une fois : elle est lue
+      # à chaque déploiement sur l'IP publique du node RG que AKS tague pour le
+      # Service app-routing-system/nginx (même logique que l'output Terraform
+      # ingress_host). Rôle Reader sur le node RG, voir scripts/oidc.sh.
+      - name: Résoudre l'hôte de l'ingress
+        run: |
+          NODE_RG=$(az aks show -g "$AKS_RG" -n "$AKS_NAME" --query nodeResourceGroup -o tsv)
+          IP=$(az network public-ip list -g "$NODE_RG" \
+            --query "[?tags.\"k8s-azure-service\"=='app-routing-system/nginx'].ipAddress | [0]" -o tsv)
+          test -n "$IP"
+          echo "INGRESS_HOST=$OWNER_TAG.$IP.nip.io" >> "$GITHUB_ENV"
+          echo "Hôte : $OWNER_TAG.$IP.nip.io"
 
       - name: Installer kubelogin
         run: |

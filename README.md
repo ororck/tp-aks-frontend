@@ -70,7 +70,7 @@ qui évite tout CORS côté navigateur. `/healthz` sert aux sondes Kubernetes.
 
 Le workflow `deploy.yml` est déclenché à la main : build de l'image (arguments
 `API_BASE_URL` et `API_KEY`), push, application des manifests `k8s/` dont
-l'Ingress (hôte injecté par la CI).
+l'Ingress (hôte nip.io construit par la CI depuis l'IP d'entrée, lue dynamiquement).
 
 ## DevSecOps
 
@@ -88,7 +88,7 @@ dans les **artifacts** (rapport axe) et dans **Security > Code scanning**.
 
 Aucun scan n'est désactivé sans commentaire justificatif. Le DAST (OWASP ZAP)
 n'est lancé qu'après le déploiement, en mode baseline par défaut ; le full scan
-est limité au seul hôte `mohamed-saidi.20.74.93.53.nip.io`.
+est limité au seul hôte nip.io de l'application (`mohamed-saidi.<ip d'ingress>.nip.io`, IP lue dynamiquement, voir l'output Terraform `ingress_host`).
 
 Sources : docs GitHub Code scanning, OSV-Scanner (google.github.io/osv-scanner),
 gitleaks (github.com/gitleaks/gitleaks), Trivy (trivy.dev/docs), SonarQube Cloud
