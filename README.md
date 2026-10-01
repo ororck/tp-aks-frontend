@@ -2,7 +2,7 @@
 
 Angular application to review Microsoft certifications (AZ-900 to start, AZ-104 next): review by
 module or mock exam, accessible from a simple link (no account). Consumes the REST API of
-[azure-quiz-backend](../azure-quiz-backend).
+[tp-aks-backend](https://github.com/ororck/tp-aks-backend).
 
 
 ## Stack
