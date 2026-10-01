@@ -68,8 +68,8 @@ qui évite tout CORS côté navigateur. `/healthz` sert aux sondes Kubernetes.
 
 ## Déploiement sur AKS
 
-Le workflow `deploy.yml` est déclenché à la main : build de l'image (arguments
-`API_BASE_URL` et `API_KEY`), push, application des manifests `k8s/` dont
+Le workflow `deploy.yml` est déclenché à la main : build de l'image (argument
+`API_BASE_URL`), push, application des manifests `k8s/` dont
 l'Ingress (hôte nip.io construit par la CI depuis l'IP d'entrée, lue dynamiquement).
 
 ## DevSecOps
