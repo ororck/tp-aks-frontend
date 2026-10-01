@@ -43,9 +43,9 @@ jobs:
       - name: Build et push de l'image
         run: |
           az acr login --name "$ACR_NAME"
-          # Le Dockerfile exige des build args non vides. /api passe par le proxy nginx,
-          # la clé est factice : aucune clé d'API applicative entre front et back.
-          docker build --build-arg API_BASE_URL=/api --build-arg API_KEY=unused -t "$IMAGE" .
+          # /api passe par le proxy nginx : aucune clé d'API applicative entre front et back
+          # (isolation réseau, ADR 0009 du dépôt terraform).
+          docker build --build-arg API_BASE_URL=/api -t "$IMAGE" .
           docker push "$IMAGE"
 
       # L'IP d'entrée du cluster partagé a déjà changé une fois : elle est lue
